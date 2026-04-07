@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Tarefas - Atividade 6</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+    
+        <header>
+            <h1>📋 Lista de Tarefas</h1>
+            <p>Atividade 6 - Adicione, marque e remova tarefas</p>
+        </header>
+
+        <!-- Área de entrada -->
+        <div class="input-area">
+            <input 
+                type="text" 
+                id="nova-tarefa" 
+                placeholder="Digite uma nova tarefa..." 
+                autocomplete="off">
+            <button id="btn-adicionar">Adicionar</button>
+        </div>
+
+        
+        <div class="lista-container">
+            <ul id="lista-tarefas">
+          
+            </ul>
+        </div>
+
+        <div class="rodape">
+            Clique em qualquer tarefa para removê-la • Marque o checkbox para concluir
+        </div>
+    </div>
+
+    <script>
+        // Aguarda o carregamento completo da página
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputTarefa = document.getElementById('nova-tarefa');
+            const btnAdicionar = document.getElementById('btn-adicionar');
+            const listaTarefas = document.getElementById('lista-tarefas');
+
+            /**
+             * Adiciona uma nova tarefa à lista
+             */
+            function adicionarTarefa() {
+                const texto = inputTarefa.value.trim();
+
+                // Validação: não permite tarefa vazia
+                if (texto === '') {
+                    inputTarefa.classList.add('shake');
+                    setTimeout(() => inputTarefa.classList.remove('shake'), 400);
+                    return;
+                }
+
+                // Cria o <li> dinamicamente
+                const li = document.createElement('li');
+
+                // Checkbox (opcional solicitado)
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.title = 'Marcar como concluída';
+
+                // Span com o texto da tarefa
+                const span = document.createElement('span');
+                span.textContent = texto;
+
+                // Monta o <li>
+                li.appendChild(checkbox);
+                li.appendChild(span);
+
+                // Adiciona o <li> na <ul>
+                listaTarefas.appendChild(li);
+
+                // Limpa o campo de input
+                inputTarefa.value = '';
+
+                // Coloca o foco novamente no input 
+                inputTarefa.focus();
+            }
+
+            //  EVENTO DO BOTÃO 
+            btnAdicionar.addEventListener('click', adicionarTarefa);
+ 
+
+            //  DELEGAÇÃO DE EVENTOS (SOLUÇÃO ELEGANTE PARA ITENS DINÂMICOS)
+            // Isso garante que TODOS os <li> criados dinamicamente também respondam ao clique
+            listaTarefas.addEventListener('click', (evento) => {
+                
+                // 1. Se o usuário clicou no checkbox → marca como concluída
+                if (evento.target.type === 'checkbox') {
+                    const liClicado = evento.target.closest('li');
+                    if (liClicado) {
+                        liClicado.classList.toggle('completed', evento.target.checked);
+                    }
+                    return; // impede a remoção
+                }
+
+                // 2. Caso contrário, remove o <li> (clique em qualquer lugar do item)
+                const liClicado = evento.target.closest('li');
+                if (liClicado) {
+                    liClicado.style.transition = 'all 0.3s ease';
+                    liClicado.style.opacity = '0';
+                    liClicado.style.transform = 'translateX(30px)';
+                    
+                    // Remove após a animação
+                    setTimeout(() => {
+                        liClicado.remove();
+                    }, 300);
+                }
+            });
+
+            // Animação de shake quando tenta adicionar tarefa vazia
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    20%, 60% { transform: translateX(-6px); }
+                    40%, 80% { transform: translateX(6px); }
+                }
+                .shake {
+                    animation: shake 0.4s ease;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Mensagem inicial (opcional)
+            console.log('%c✅ Aplicação de Lista de Tarefas carregada com sucesso!', 'color: #4f46e5; font-weight: bold;');
+        });
+    </script>
+</body>
+</html>
